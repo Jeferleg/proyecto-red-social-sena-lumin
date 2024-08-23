@@ -2,7 +2,7 @@
 
 import { lucia } from "@/auth";
 import prisma from "@/lib/prisma";
-import { signUpSchema, signUpvalues } from "@/lib/validation";
+import { signUpSchema, SignUpValues } from "@/lib/validation";
 import { hash } from "@node-rs/argon2"
 import { generateIdFromEntropySize } from "lucia";
 import { isRedirectError } from "next/dist/client/components/redirect";
@@ -10,7 +10,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function signUp(
-  credentials: signUpvalues
+  credentials: SignUpValues,
 ): Promise<{ error: string }> {
   try {
     const {username, email, password} = signUpSchema.parse(credentials);

@@ -1,7 +1,7 @@
 "user server"
 
 import prisma from "@/lib/prisma";
-import { loginSchema, loginValues } from "@/lib/validation";
+import { loginSchema, LoginValues, } from "@/lib/validation";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import {verify} from "@node-rs/argon2"
 import { lucia } from "@/auth";
@@ -9,7 +9,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function login(
-    credentials: loginValues,
+    credentials: LoginValues,
 ) : Promise<{error: string}> {
     try {
         const {username,password} = loginSchema.parse(credentials)
