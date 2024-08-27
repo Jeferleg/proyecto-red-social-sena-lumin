@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useTransition } from "react";
 import { signUp } from "./actions";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export default function SignUpForm() {
     const [error, setError] = useState<string>();
@@ -33,13 +34,15 @@ export default function SignUpForm() {
   async function onSubmit(values: SignUpValues) {
     setError(undefined);
     startTransition(async () =>{
-        await signUp(values);
+        const {error} = await signUp(values);
+        if (error) setError(error);
     })
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+        {error && <p className="text-center text-destructive">{error}</p>}
         <FormField
           control={form.control}
           name="username"
@@ -73,7 +76,7 @@ export default function SignUpForm() {
             <FormItem>
               <FormLabel>Contraseña</FormLabel>
               <FormControl>
-                <Input placeholder="Contraseña" type="password" {...field} />
+                <PasswordInput placeholder="Contraseña" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
