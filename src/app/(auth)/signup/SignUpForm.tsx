@@ -16,11 +16,12 @@ import { Button } from "@/components/ui/button";
 import { useState, useTransition } from "react";
 import { signUp } from "./actions";
 import { PasswordInput } from "@/components/PasswordInput";
+import LoadingButton from "@/components/LoadingButton";
 
 export default function SignUpForm() {
-    const [error, setError] = useState<string>();
+  const [error, setError] = useState<string>();
 
-    const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<SignUpValues>({
     resolver: zodResolver(signUpSchema),
@@ -33,10 +34,10 @@ export default function SignUpForm() {
 
   async function onSubmit(values: SignUpValues) {
     setError(undefined);
-    startTransition(async () =>{
-        const {error} = await signUp(values);
-        if (error) setError(error);
-    })
+    startTransition(async () => {
+      const { error } = await signUp(values);
+      if (error) setError(error);
+    });
   }
 
   return (
@@ -63,7 +64,11 @@ export default function SignUpForm() {
             <FormItem>
               <FormLabel>Correo electrónico</FormLabel>
               <FormControl>
-                <Input placeholder="Correo electrónico" type="email" {...field} />
+                <Input
+                  placeholder="Correo electrónico"
+                  type="email"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -82,9 +87,9 @@ export default function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-            Crear Cuenta
-        </Button>
+        <LoadingButton loading={isPending} type="submit" className="w-full">
+          Crear Cuenta
+        </LoadingButton>
       </form>
     </Form>
   );
