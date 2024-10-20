@@ -13,8 +13,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Luminstar",
-    default: "luminstar",
+    template: "%s | Luminstars",
+    default: "luminstars",
   },
   description: "la red social para los entuciastas de la astronomia",
 };
