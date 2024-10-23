@@ -1,3 +1,4 @@
+import UserButton from "@/components/UserButton";
 import Link from "next/link";
 
 export default function Navbar() {
@@ -7,6 +8,7 @@ export default function Navbar() {
         <Link href="/" className="text-2xl font-bold text-primary">
         Luminstars
         </Link>
+        <UserButton />
       </div>
     </header>
   );
