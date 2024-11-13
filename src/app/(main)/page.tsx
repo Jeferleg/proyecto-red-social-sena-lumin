@@ -2,11 +2,12 @@ import PostEditor from "@/components/post/editor/PostEditor";
 import Post from "@/components/post/Post";
 import TrendsSidebar from "@/components/TrendsSidebar";
 import prisma from "@/lib/prisma";
-import { postDateInclude } from "@/lib/types";
+import { postDataInclude } from "@/lib/types";
+
 
 export default async function Home() {
   const post = await prisma.post.findMany({
-    include: postDateInclude,
+    include: postDataInclude,
     orderBy: { createdAt: "desc" },
   });
 

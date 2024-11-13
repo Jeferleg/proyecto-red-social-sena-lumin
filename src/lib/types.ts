@@ -1,18 +1,18 @@
 import { Prisma } from "@prisma/client";
 
-export const userDateSelect = {
+export const userDataSelect = {
   id: true,
   username: true,
   displayName: true,
   avatarUrl: true,
 } satisfies Prisma.UserSelect;
 
-export const postDateInclude = {
+export const postDataInclude = {
   user: {
-    select: userDateSelect,
+    select: userDataSelect,
   },
 } satisfies Prisma.PostInclude;
 
-export type PostDate = Prisma.PostGetPayload<{
-  include: typeof postDateInclude;
+export type PostData = Prisma.PostGetPayload<{
+  include: typeof postDataInclude;
 }>;
