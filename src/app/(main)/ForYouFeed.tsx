@@ -1,27 +1,37 @@
 "use client";
 
 import Post from "@/components/post/Post";
-import { PostData } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import kyInstance from "@/lib/ky";
+import { PostData, PostsPage } from "@/lib/types";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
 export default function ForYouFeed() {
-  const query = useQuery<PostData[]>({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
     queryKey: ["post-feed", "for-you"],
-    queryFn: async () => {
-      const res = await fetch("/api/posts/for-you");
-      if (!res.ok) {
-        throw Error(`Request failed with status code ${res.status}`);
-      }
-      return res.json();
-    },
+    queryFn: ({pageParam}) => kyInstance.get(
+      "/api/posts/for-you",
+      pageParam ? {searchParams: {cursor: pageParam}} : {}
+    ).json<PostsPage>(),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor
   });
 
-  if (query.status === "pending") {
+  const posts = data?.pages.flatMap(page => page.posts) || [];
+
+  if (status === "pending") {
     return <Loader2 className="mx-auto animate-spin" />;
   }
 
-  if (query.status === "error") {
+  if (status === "error") {
     return (
       <p className="text-center text-destructive">
         Ocurrió un error al cargar la publicación
@@ -30,10 +40,13 @@ export default function ForYouFeed() {
   }
 
   return (
-    <>
-      {query.data.map((post) => (
+    <div className="space-y-5">
+      {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}
-    </>
+      <Button onClick={() => fetchNextPage()}>
+        Cargar más
+      </Button>
+    </div>
   );
 }
