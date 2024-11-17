@@ -1,5 +1,6 @@
 "use client";
 
+import InfiniteScrollContainer from "@/components/infiniteScrollContainer";
 import Post from "@/components/post/Post";
 import { Button } from "@/components/ui/button";
 import kyInstance from "@/lib/ky";
@@ -17,15 +18,18 @@ export default function ForYouFeed() {
     status,
   } = useInfiniteQuery({
     queryKey: ["post-feed", "for-you"],
-    queryFn: ({pageParam}) => kyInstance.get(
-      "/api/posts/for-you",
-      pageParam ? {searchParams: {cursor: pageParam}} : {}
-    ).json<PostsPage>(),
+    queryFn: ({ pageParam }) =>
+      kyInstance
+        .get(
+          "/api/posts/for-you",
+          pageParam ? { searchParams: { cursor: pageParam } } : {}
+        )
+        .json<PostsPage>(),
     initialPageParam: null as string | null,
-    getNextPageParam: (lastPage) => lastPage.nextCursor
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
-  const posts = data?.pages.flatMap(page => page.posts) || [];
+  const posts = data?.pages.flatMap((page) => page.posts) || [];
 
   if (status === "pending") {
     return <Loader2 className="mx-auto animate-spin" />;
@@ -40,13 +44,14 @@ export default function ForYouFeed() {
   }
 
   return (
-    <div className="space-y-5">
+    <InfiniteScrollContainer
+      className="space-y-5"
+      onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
+    >
       {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}
-      <Button onClick={() => fetchNextPage()}>
-        Cargar más
-      </Button>
-    </div>
+      {isFetchingNextPage && <Loader2 className="mx-auto my-3 animate-spin" />}
+    </InfiniteScrollContainer>
   );
 }
