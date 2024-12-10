@@ -1,7 +1,9 @@
+"use client";
+
 import useFollowerInfo from "@/hooks/useFollowerInfo";
 import { FollowerInfo } from "@/lib/types";
 import { useToast } from "./ui/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
 import kyInstance from "@/lib/ky";
 
@@ -20,11 +22,35 @@ export default function FollowButton({
 
   const { data } = useFollowerInfo(userId, initialState);
 
+  const queryKey: QueryKey = ["Follower-Info", userId];
+
   const { mutate } = useMutation({
     mutationFn: () =>
       data.isFollowedByUser
         ? kyInstance.delete(`/api/users/${userId}/followers`)
         : kyInstance.post(`/api/users/${userId}/followers`),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousState = queryClient.getQueryData<FollowerInfo>(queryKey);
+
+      queryClient.setQueryData<FollowerInfo>(queryKey, () => ({
+        followers:
+          (previousState?.followers || 0) +
+          (previousState?.isFollowedByUser ? -1 : 1),
+        isFollowedByUser: !previousState?.isFollowedByUser,
+      }));
+
+      return { previousState };
+    },
+    onError(error, variables, context) {
+      queryClient.setQueryData(queryKey, context?.previousState);
+      console.error(error);
+      toast({
+        variant: "destructive",
+        description: "Algo salió mal. Por favor inténtalo de nuevo.",
+      });
+    },
   });
 
   return (
@@ -32,7 +58,7 @@ export default function FollowButton({
       variant={data.isFollowedByUser ? "secondary" : "default"}
       onClick={() => mutate()}
     >
-      {data.isFollowedByUser ? "Unfollow" : "Follow"}
+      {data.isFollowedByUser ? "Dejar de seguir" : "Seguir"}
     </Button>
   );
 }

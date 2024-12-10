@@ -7,9 +7,9 @@ export async function GET(
   { params: { userId } }: { params: { userId: string } }
 ) {
   try {
-    const { user: loggedIdUser } = await validateRequest();
+    const { user: loggedInUser } = await validateRequest();
 
-    if (!loggedIdUser) {
+    if (!loggedInUser) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -18,7 +18,7 @@ export async function GET(
       select: {
         followers: {
           where: {
-            followerId: loggedIdUser.id,
+            followerId: loggedInUser.id,
           },
           select: {
             followerId: true,
