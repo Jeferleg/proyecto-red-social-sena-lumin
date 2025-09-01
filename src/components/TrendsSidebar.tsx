@@ -110,7 +110,8 @@ async function TrendingTopics() {
         const title = hashtag.split("")[1];
 
         return (
-          <Link key={title} href={`/hashtag/${title}`} className="block">
+          <Link key={hashtag} href={`/search?q=${encodeURIComponent(hashtag)}`} className="block">
+
             <p
               className="line-clamp-1 break-all font-semibold hover:underline"
               title={hashtag}

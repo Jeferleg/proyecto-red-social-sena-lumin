@@ -38,18 +38,6 @@ export default async function MenuBar({ className }: MenuBarProps) {
       <NotificationsButton
         initialState={{ unreadCount: unreadNotificationsCount }}
       />
-
-      <Button
-        variant="ghost"
-        className="flex items-center justify-start gap-3"
-        title="Messajes"
-        asChild
-      >
-        <Link href="/messajes">
-          <Mail />
-          <span className="hidden lg:inline">Mensajes</span>
-        </Link>
-      </Button>
       <Button
         variant="ghost"
         className="flex items-center justify-start gap-3"
